@@ -4,13 +4,14 @@ import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.example.models.Turismo;
-import org.vaadin.example.services.FrontService;
+import com.vaadin.flow.component.dialog.Dialog;
 
 import java.util.ArrayList;
 
@@ -37,22 +38,32 @@ public class MainView extends VerticalLayout {
      * @param service
      *            The message service. Automatically injected Spring managed bean.
      */
+    ArrayList<Turismo> listaTurismos = new ArrayList<>();
     public MainView(@Autowired FrontService service) {
-        FrontService frontService;
-        ArrayList<Turismo> listaTurismos = new ArrayList<>();
-        Grid<Turismo> grid = new Grid<>(Turismo.class,false);
-        grid.addColumn(turismo -> turismo.getOrigen().getComunidad()).setHeader("Comunidad");
-        grid.addColumn(turismo -> turismo.getDestino().getComunidad()).setHeader("Destino");
+        Grid<Turismo> grid = new Grid<>(Turismo.class, false);
+
+        // Configurar las columnas del Grid
+
+
+        grid.addColumn(turismo -> turismo.getOrigen().getComunidad()).setHeader("Comunidad Origen");
+        grid.addColumn(turismo -> turismo.getDestino().getComunidad()).setHeader("Comunidad Destino");
         grid.addColumn(turismo -> turismo.getPeriodo().getFecha_inicio()).setHeader("Fecha Inicio");
         grid.addColumn(turismo -> turismo.getPeriodo().getFecha_fin()).setHeader("Fecha Fin");
-
-        grid.setWidth("800px");
-
+        grid.setWidth("1800px");
         grid.setItems(listaTurismos);
-        grid.addClassName("grid-turismo");
-        grid.addItemDoubleClickListener(e ->{
-            Turismo turismo = e.getItem();
+        grid.addClassName("grid-turismos");
+        //Si dobleclikamos sobre un elemento de la lista:
 
+        Button cargarElems = new Button("Cargar Elems", e->{
+            listaTurismos = service.getTurismos();
+            grid.setItems(listaTurismos);
+            grid.getDataProvider().refreshAll();
         });
+
+        // Añadir el Grid al layout principal
+        add(grid, cargarElems);
+
+
+
     }
 }

@@ -1,4 +1,4 @@
-package org.vaadin.example.models;
+package org.vaadin.example;
 
 import com.google.gson.annotations.SerializedName;
 

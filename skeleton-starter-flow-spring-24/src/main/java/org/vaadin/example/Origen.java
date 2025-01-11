@@ -1,4 +1,4 @@
-package org.vaadin.example.models;
+package org.vaadin.example;
 
 public class Origen {
     private String provincia;

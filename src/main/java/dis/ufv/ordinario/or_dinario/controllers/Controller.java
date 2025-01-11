@@ -10,34 +10,36 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 
 @RestController
+@RequestMapping("/api")
+
 public class Controller {
 
     @Autowired
     private ServiceBBDD localservice;
 
-    @GetMapping("/api")
+    @GetMapping("/db")
     public ResponseEntity<ArrayList<Turismo>> getTurismos() {
 
        return ResponseEntity.ok().body(localservice.LeerFicheroJson());
     }
 
-    @GetMapping("/api/{id}")
+    @GetMapping("/db/{id}")
     public ResponseEntity<Turismo> getTurismoById(@PathVariable String id) {
         return ResponseEntity.ok().body(localservice.buscarTurismoPorId(id));
     }
-    @PostMapping(path = "/api",
+    @PostMapping(path = "/db",
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ArrayList<Turismo>> crearTurismo(@RequestBody Turismo turismo) {
         return ResponseEntity.ok().body(localservice.crearTurismo(turismo));
     }
-    @PutMapping(path = "/api/{id}",
+    @PutMapping(path = "/db/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Turismo> actualizarTurismo(@PathVariable String id, @RequestBody Turismo turismoActualizado) {
         return ResponseEntity.ok().body(localservice.actualizarTurismo(id, turismoActualizado));
     }
-    @DeleteMapping("/api/{id}")
+    @DeleteMapping("/db/{id}")
     public ResponseEntity<ArrayList<Turismo>> eliminarTurismo(@PathVariable String id) {
         return ResponseEntity.ok().body(localservice.eliminarTurismo(id));
     }
