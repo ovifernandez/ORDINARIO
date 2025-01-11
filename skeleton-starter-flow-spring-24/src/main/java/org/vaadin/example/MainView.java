@@ -3,11 +3,16 @@ package org.vaadin.example;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.example.models.Turismo;
+import org.vaadin.example.services.FrontService;
+
+import java.util.ArrayList;
 
 /**
  * A sample Vaadin view class.
@@ -18,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * A new instance of this class is created for every new user and every browser
  * tab/window.
  * <p>
- * The main view contains a text field for getting the user name and a button
+ * The main view contains a text field for getting the username and a button
  * that shows a greeting message in a notification.
  */
 @Route
@@ -33,28 +38,21 @@ public class MainView extends VerticalLayout {
      *            The message service. Automatically injected Spring managed bean.
      */
     public MainView(@Autowired FrontService service) {
+        FrontService frontService;
+        ArrayList<Turismo> listaTurismos = new ArrayList<>();
+        Grid<Turismo> grid = new Grid<>(Turismo.class,false);
+        grid.addColumn(turismo -> turismo.getOrigen().getComunidad()).setHeader("Comunidad");
+        grid.addColumn(turismo -> turismo.getDestino().getComunidad()).setHeader("Destino");
+        grid.addColumn(turismo -> turismo.getPeriodo().getFecha_inicio()).setHeader("Fecha Inicio");
+        grid.addColumn(turismo -> turismo.getPeriodo().getFecha_fin()).setHeader("Fecha Fin");
 
-        // Use TextField for standard text input
-        TextField textField = new TextField("Your name");
-        textField.addClassName("bordered");
+        grid.setWidth("800px");
 
-        // Button click listeners can be defined as lambda expressions
-        Button button = new Button("Say hello", e -> {
-            add(new Paragraph(service.greet(textField.getValue())));
+        grid.setItems(listaTurismos);
+        grid.addClassName("grid-turismo");
+        grid.addItemDoubleClickListener(e ->{
+            Turismo turismo = e.getItem();
+
         });
-
-        // Theme variants give you predefined extra styles for components.
-        // Example: Primary button has a more prominent look.
-        button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-        // You can specify keyboard shortcuts for buttons.
-        // Example: Pressing enter in this view clicks the Button.
-        button.addClickShortcut(Key.ENTER);
-
-        // Use custom CSS classes to apply styling. This is defined in
-        // styles.css.
-        addClassName("centered-content");
-
-        add(textField, button);
     }
 }
