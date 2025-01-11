@@ -7,6 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 @RestController
 public class Controller {
 
@@ -14,30 +16,29 @@ public class Controller {
     private ServiceBBDD localservice;
 
     @GetMapping("/api")
-    public ResponseEntity<Turismo> getTurismos() {
-       return null;
+    public ResponseEntity<ArrayList<Turismo>> getTurismos() {
+
+       return ResponseEntity.ok().body(localservice.LeerFicheroJson());
     }
 
     @GetMapping("/api/{id}")
-    public ResponseEntity<Turismo> getTurismoById(@RequestParam String id) {
-        return null;
+    public ResponseEntity<Turismo> getTurismoById(@PathVariable String id) {
+        return ResponseEntity.ok().body(localservice.buscarTurismoPorId(id));
     }
     @PostMapping(path = "/api",
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Turismo> crearTurismo(@RequestBody Turismo turismo) {
-        return null;
+    public ResponseEntity<ArrayList<Turismo>> crearTurismo(@RequestBody Turismo turismo) {
+        return ResponseEntity.ok().body(localservice.crearTurismo(turismo));
     }
     @PutMapping(path = "/api/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Turismo> actualizarTurismo(@RequestBody String id) {
-        return null;
+    public ResponseEntity<Turismo> actualizarTurismo(@PathVariable String id, @RequestBody Turismo turismoActualizado) {
+        return ResponseEntity.ok().body(localservice.actualizarTurismo(id, turismoActualizado));
     }
-    @DeleteMapping(path = "/api",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Turismo> eliminarTurismo(@RequestBody String id) {
-        return null;
+    @DeleteMapping("/api/{id}")
+    public ResponseEntity<ArrayList<Turismo>> eliminarTurismo(@PathVariable String id) {
+        return ResponseEntity.ok().body(localservice.eliminarTurismo(id));
     }
 }
