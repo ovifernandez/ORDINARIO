@@ -1,5 +1,6 @@
 package org.vaadin.example;
 
+import com.google.gson.Gson;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -89,6 +90,21 @@ public class MainView extends VerticalLayout {
             dialogLayout.getStyle().set("width", "18rem").set("max-width", "100%");
 
             dialog.add(dialogLayout);
+
+            Button saveDialog = new Button("Guardar cambios", event->{
+                Origen origenActualizado = new Origen(comunidadOrigen.getValue(), provinciaOrigen.getValue());
+                Destino destinoActualizado = new Destino(comunidadDestino.getValue(), provinciaDestino.getValue());
+                Periodo periodoActualizado = new Periodo(fechaInicio.getValue(), fechaFin.getValue());
+                Turismo turismoActualizado = new Turismo(origenActualizado, destinoActualizado, periodoActualizado, total.getValue());
+                Gson gson = new Gson();
+                String json = gson.toJson(turismoActualizado);
+                System.out.println("JSON generado: " + json);
+
+                service.editarTurismo(id, turismoActualizado);
+                dialog.close();
+            });
+            dialog.getFooter().add(saveDialog);
+
             dialog.open();
         });
         Button cargarElems = new Button("Cargar Elems", e->{
