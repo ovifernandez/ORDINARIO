@@ -45,15 +45,15 @@ public class Turismo {
         return total;
     }
 
-    public void setOrigen(Origen origen) {
+    public void setOrigen(Origen from) {
         this.from = from;
     }
 
-    public void setDestino(Destino destino) {
+    public void setDestino(Destino to) {
         this.to = to;
     }
 
-    public void setPeriodo(Periodo periodo) {
+    public void setPeriodo(Periodo timeRange) {
         this.timeRange = timeRange;
     }
 
