@@ -82,7 +82,7 @@ public class ServiceBBDD {
                 if(writeJsonFile("src/main/resources/TurismoComunidades.json", listaTurismo)){
                     return listaTurismo;
                 }else{
-                    System.out.println("No se puede leer la base de datos");
+                    System.out.println("No se puede leer la base de datos.");
                     return null;
                 }
             }
