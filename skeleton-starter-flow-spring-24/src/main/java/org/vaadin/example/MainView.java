@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.flow.component.dialog.Dialog;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A sample Vaadin view class.
@@ -45,7 +46,6 @@ public class MainView extends VerticalLayout {
 
         // Configurar las columnas del Grid
 
-
         grid.addColumn(turismo -> turismo.getOrigen().getComunidad()).setHeader("Comunidad Origen");
         grid.addColumn(turismo -> turismo.getDestino().getComunidad()).setHeader("Comunidad Destino");
         grid.addColumn(turismo -> turismo.getPeriodo().getFecha_inicio()).setHeader("Fecha Inicio");
@@ -56,67 +56,27 @@ public class MainView extends VerticalLayout {
         //Si dobleclikamos sobre un elemento de la lista:
         grid.addItemDoubleClickListener(e->{
             Turismo turismo = e.getItem();
-            Dialog dialog = new Dialog();
-
-            //Creamos los elementos que se añadiran al modal
-            TextField comunidadOrigen = new TextField("Comunidad Origen: ");
-            TextField provinciaOrigen = new TextField("Provincia Origen: ");
-            TextField comunidadDestino = new TextField("Comunidad Destino: ");
-            TextField provinciaDestino = new TextField("Provincia Destino: ");
-            TextField fechaInicio = new TextField("Fecha de Inicio: ");
-            TextField fechaFin = new TextField("Fecha de Fin: ");
-            IntegerField total = new IntegerField("Total: ");
-
-            dialog.setWidth("450px");
-            dialog.setCloseOnEsc(false);
-            dialog.setCloseOnOutsideClick(false);
-            String id = turismo.get_id();
-            dialog.setHeaderTitle("Detalles del Viaje");
-
-            comunidadOrigen.setValue(turismo.getOrigen().getComunidad());
-            provinciaOrigen.setValue(turismo.getOrigen().getProvincia());
-            comunidadDestino.setValue(turismo.getOrigen().getComunidad());
-            provinciaDestino.setValue(turismo.getDestino().getProvincia());
-            fechaInicio.setValue(turismo.getPeriodo().getFecha_inicio());
-            fechaFin.setValue(turismo.getPeriodo().getFecha_fin());
-            total.setValue(turismo.getTotal());
-            HorizontalLayout origenLayout = new HorizontalLayout(comunidadOrigen, provinciaOrigen);
-            HorizontalLayout destinoLayout = new HorizontalLayout(comunidadDestino, provinciaDestino);
-            HorizontalLayout fechasLayout = new HorizontalLayout(fechaInicio, fechaFin);
-            VerticalLayout dialogLayout = new VerticalLayout(origenLayout, destinoLayout, fechasLayout, total);
-            dialogLayout.setPadding(false);
-            dialogLayout.setSpacing(false);
-            dialogLayout.setAlignItems(FlexComponent.Alignment.STRETCH);
-            dialogLayout.getStyle().set("width", "18rem").set("max-width", "100%");
-
-            dialog.add(dialogLayout);
-
-            Button saveDialog = new Button("Guardar cambios", event->{
-                Origen origenActualizado = new Origen(comunidadOrigen.getValue(), provinciaOrigen.getValue());
-                Destino destinoActualizado = new Destino(comunidadDestino.getValue(), provinciaDestino.getValue());
-                Periodo periodoActualizado = new Periodo(fechaInicio.getValue(), fechaFin.getValue());
-                Turismo turismoActualizado = new Turismo(origenActualizado, destinoActualizado, periodoActualizado, total.getValue());
-                Gson gson = new Gson();
-                String json = gson.toJson(turismoActualizado);
-                System.out.println("JSON generado: " + json);
-
-                service.editarTurismo(id, turismoActualizado);
-                dialog.close();
-            });
-            dialog.getFooter().add(saveDialog);
-
-            dialog.open();
+            DialogView dialogEdit = new DialogView(service);
+            dialogEdit.generateEditDialog(turismo).open();
         });
+
+        HorizontalLayout botonesMain = new HorizontalLayout();
         Button cargarElems = new Button("Cargar Elems", e->{
             listaTurismos = service.getTurismos();
             grid.setItems(listaTurismos);
             grid.getDataProvider().refreshAll();
         });
 
+        Button newElem = new Button("Nuevo elemento", e->{
+            DialogView dialogNew = new DialogView(service);
+            dialogNew.generateCreateDialog().open();
+        });
+        botonesMain.add(cargarElems, newElem);
         // Añadir el Grid al layout principal
-        add(grid, cargarElems);
+        add(grid, botonesMain);
 
-
+        List<Turismo> opcionesComunidades = new ArrayList<>();
+        
 
     }
 }
