@@ -1,6 +1,6 @@
 package dis.ufv.ordinario.or_dinario.services;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import dis.ufv.ordinario.or_dinario.models.Turismo;
 import org.springframework.stereotype.Service;
@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
 
 import static com.fasterxml.jackson.databind.type.LogicalType.Collection;
 
@@ -98,40 +99,53 @@ public class ServiceBBDD {
     }
 
     public ArrayList<String> leerComunidades(String fichero) {
-        ArrayList<Turismo> listaTurismo = LeerFicheroJson(fichero);
-        ArrayList<String> comunidades = new ArrayList<>();
+        try {
+            BufferedReader reader = Files.newBufferedReader(Paths.get(fichero));
+            JsonObject objectAgrupados = JsonParser.parseReader(reader).getAsJsonObject();
 
-        for (Turismo turismo : listaTurismo) {
-            //Si mi string de comunidades no contiene aún esta comunidad de destino, la añado al list.
-            //Así, evitamos duplicados.
-            if (!comunidades.contains(turismo.getDestino().getComunidad())) {
-                comunidades.add(turismo.getDestino().getComunidad());
+            ArrayList<String> comunidades = new ArrayList<>();
+
+            for (Map.Entry<String, JsonElement> claveComunidad : objectAgrupados.entrySet()) {
+
+                String comunidad = claveComunidad.getKey();
+                if (!comunidades.contains(comunidad)){
+                    comunidades.add(comunidad);
+                }
             }
+            //Ordena alfabeticamente el arraylist de comunidades usando la libreria Collections.
+            Collections.sort(comunidades);
+            return comunidades;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        //Ordena alfabeticamente el arraylist de comunidades usando la libreria Collections.
-        Collections.sort(comunidades);
-        return comunidades;
+
     }
 
-    public ArrayList<Turismo> getTurismoByComunidad(String comunidad){
-        ArrayList<Turismo> listaTurismo = LeerFicheroJson("src/main/resources/Comunidades_Agrupadas.json");
-        ArrayList<Turismo> turismosBuscados = new ArrayList<>();
+    public ArrayList<Turismo> getTurismoByComunidad(String comunidad, String fichero){
+        BufferedReader reader = null;
+        try {
+            reader = Files.newBufferedReader(Paths.get(fichero));
+            JsonObject objectAgrupados = JsonParser.parseReader(reader).getAsJsonObject();
+            ArrayList<Turismo> turismosBuscados = new ArrayList<>();
 
-        //Variable booleana usada para aprovechar que el json ya está ordenado por comunidades de Destino,
-        //lo que significa que una vez encontrada la comunidad, si se encuentra en los siguientes objetos una comunidad diferente,
-        //significará que no hay más objetos de esa comunidad, por lo que podemos dejar de leer dicho json y parar el bucle.
-        boolean comunidad_encontrada = Boolean.FALSE;
+            for (Map.Entry<String, JsonElement> claveComunidad : objectAgrupados.entrySet()) {
+                String comunidadActual = claveComunidad.getKey();
+                JsonArray arrayComunidad = claveComunidad.getValue().getAsJsonArray();
 
-        for (int i = 0; i < listaTurismo.size(); i++) {
-            if (listaTurismo.get(i).getDestino().getComunidad().equals(comunidad)) {
-                turismosBuscados.add(listaTurismo.get(i));
-                comunidad_encontrada = Boolean.TRUE;
+                if(comunidadActual.equals(comunidad)){
+                    // Convertir los elementos del JsonArray a objetos Turismo y añadirlos al ArrayList
+                    for (JsonElement element : arrayComunidad) {
+                        Turismo turismo = new Gson().fromJson(element, Turismo.class);
+                        turismosBuscados.add(turismo);
+                    }
+                    // Una vez encontrada la comunidad, ya no es necesario continuar buscando, así que salimos del bucle
+                    break;
+                }
             }
-
-            if (comunidad_encontrada & !listaTurismo.get(i).getDestino().getComunidad().equals(comunidad)) {
-                break;
-            }
+            return turismosBuscados;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return turismosBuscados;
+
     }
 }

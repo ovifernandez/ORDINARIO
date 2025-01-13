@@ -53,6 +53,6 @@ public class Controller {
 
     @GetMapping("/comunidades/{comunidad}")
     public ResponseEntity<ArrayList<Turismo>> getTurismoPorComunidad(@PathVariable String comunidad) {
-        return ResponseEntity.ok().body(localservice.getTurismoByComunidad(comunidad));
+        return ResponseEntity.ok().body(localservice.getTurismoByComunidad(comunidad, "src/main/resources/Comunidades_Agrupadas.json"));
     }
 }
