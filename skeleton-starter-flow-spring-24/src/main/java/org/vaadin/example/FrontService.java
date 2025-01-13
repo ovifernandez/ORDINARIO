@@ -95,7 +95,7 @@ public class FrontService {
         }
     }
 
-    public Turismo agregarTurismo(Turismo turismoNew) {
+    public ArrayList<Turismo> agregarTurismo(Turismo turismoNew) {
         String url = String.format("%s/db", URL_API);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = null;
@@ -111,7 +111,9 @@ public class FrontService {
 
             //Si la respuesta http es 201, se ha creado la página correctamente
             if (response.statusCode() == 200) {
-                Turismo responseObj = gson.fromJson(response.body(), Turismo.class);
+                Type listType = new TypeToken<ArrayList<Turismo>>() {
+                }.getType();
+                ArrayList<Turismo> responseObj = gson.fromJson(response.body(), listType);
                 return responseObj;
             } else {
                 throw new RuntimeException("Error al agregar el turismo, por error de temporización");
