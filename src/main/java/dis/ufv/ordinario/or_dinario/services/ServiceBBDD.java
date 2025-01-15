@@ -2,6 +2,7 @@ package dis.ufv.ordinario.or_dinario.services;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import com.opencsv.CSVReader;
 import dis.ufv.ordinario.or_dinario.models.Turismo;
 import org.springframework.stereotype.Service;
 
@@ -147,5 +148,20 @@ public class ServiceBBDD {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public String[] leeCSV(String ficheroCSV){
+        try{
+            CSVReader csvReader = new CSVReader(new FileReader(ficheroCSV));
+            String[] fila = null;
+            while((fila = csvReader.readNext()) != null){
+                System.out.println(fila[0]
+                         + " | " + fila[1]
+                         + " | " + fila[2]);
+            }
+            csvReader.close();
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 }
