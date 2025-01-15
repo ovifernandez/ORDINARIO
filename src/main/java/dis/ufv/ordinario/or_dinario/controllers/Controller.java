@@ -1,5 +1,6 @@
 package dis.ufv.ordinario.or_dinario.controllers;
 
+import dis.ufv.ordinario.or_dinario.models.Pokemon;
 import dis.ufv.ordinario.or_dinario.models.Turismo;
 import dis.ufv.ordinario.or_dinario.services.ServiceBBDD;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,5 +55,10 @@ public class Controller {
     @GetMapping("/comunidades/{comunidad}")
     public ResponseEntity<ArrayList<Turismo>> getTurismoPorComunidad(@PathVariable String comunidad) {
         return ResponseEntity.ok().body(localservice.getTurismoByComunidad(comunidad, "src/main/resources/Comunidades_Agrupadas.json"));
+    }
+
+    @GetMapping("/csv")
+    public ResponseEntity<ArrayList<Pokemon>> getPokemonCSV() {
+        return ResponseEntity.ok().body(localservice.leeCSV("src/main/resources/Pokemon.csv"));
     }
 }
